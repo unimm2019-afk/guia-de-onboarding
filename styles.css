@@ -1,0 +1,522 @@
+/* =====================================================================
+   Grupo MM — Guia de Admissão
+   Folha de estilos única e externa (sem estilos inline no HTML).
+   Organização: tokens → base → layout → navegação → progresso →
+   fundos → decoração → tipografia → componentes → animações → foco.
+   ===================================================================== */
+
+/* ============ TOKENS ============ */
+:root {
+  --red:      #bc0404;
+  --red-2:    #8b0000;
+  --red-3:    #7a0000;
+  --red-4:    #1a0000;
+  --yellow:   #f4c500;
+  --yellow-2: #c89a00;
+  --ink:      #1a1a1a;
+  --ink-2:    #252525;
+  --paper:    #ffffff;
+  --cream:    #fdf8f0;
+  --shell:    #111111;
+
+  --radius:   14px;
+  --frame-max: 430px;
+
+  --pad-x: 28px;
+}
+
+/* ============ RESET ============ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  width: 100%;
+  height: 100%;
+  background: var(--shell);
+  font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+}
+
+img { max-width: 100%; height: auto; }
+
+/* ============ APP SHELL ============ */
+#app {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--shell);
+}
+
+#frame {
+  position: relative;
+  width: 100%;
+  max-width: var(--frame-max);
+  height: 100%;
+  overflow: hidden;
+}
+
+/* ============ SLIDES — navegação CSS :target ============ */
+.slide {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  padding: max(72px, calc(env(safe-area-inset-top) + 50px)) var(--pad-x)
+           max(60px, calc(env(safe-area-inset-bottom) + 44px));
+  overflow-y: auto;                 /* rede de segurança: conteúdo alto rola */
+  overflow-x: hidden;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 1;
+  transition: opacity .32s ease;
+}
+
+/* Capa visível por padrão */
+#s0 { opacity: 1; pointer-events: all; z-index: 2; }
+
+/* Slide alvo (via âncora) fica visível e acima */
+.slide:target { opacity: 1; pointer-events: all; z-index: 10; }
+
+/* Ao navegar para qualquer slide diferente da capa, esconde a capa */
+#frame:has(.slide:not(#s0):target) #s0 {
+  opacity: 0;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.slide.is-centered {
+  align-items: center;
+  text-align: center;
+}
+
+/* Camada de conteúdo acima da decoração */
+.content {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  padding-left: 56px;
+  padding-right: 56px;
+}
+
+/* ============ NAVEGAÇÃO ============ */
+/* Zonas de toque nas BORDAS (não cobrem a coluna central,
+   para que o conteúdo continue rolável e interativo). */
+.tap {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: inherit;
+  touch-action: manipulation;
+}
+.tap-prev { left: 0;  width: 66px; justify-content: flex-start; }
+.tap-next { right: 0; width: 66px; justify-content: flex-end; }
+
+/* Affordance visível (chevron) — dá pista e destino ao foco */
+.tap .chevron {
+  margin: 0 10px;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  font-weight: 700;
+  line-height: 1;
+  background: rgba(127, 127, 127, .28);
+  border: 2px solid currentColor;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, .18);
+  color: currentColor;
+  opacity: .9;
+}
+.tap:hover .chevron { opacity: 1; }
+
+/* ============ BARRA DE PROGRESSO (decorativa) ============ */
+.progress {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  pointer-events: none;
+  padding: max(10px, env(safe-area-inset-top)) 12px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.progress-track {
+  flex: 1;
+  height: 3px;
+  background: rgba(255, 255, 255, .22);
+  border-radius: 99px;
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  border-radius: 99px;
+  background: var(--yellow);
+}
+.progress-n {
+  font-size: 9px;
+  font-weight: 800;
+  color: rgba(255, 255, 255, .45);
+  letter-spacing: 1px;
+  white-space: nowrap;
+}
+
+/* Larguras da barra por etapa */
+.w10  { width: 10%; }  .w20 { width: 20%; }  .w30 { width: 30%; }
+.w40  { width: 40%; }  .w50 { width: 50%; }  .w60 { width: 60%; }
+.w70  { width: 70%; }  .w80 { width: 80%; }  .w90 { width: 90%; }
+.w100 { width: 100%; }
+
+/* Em fundos claros, ajustar contraste da barra */
+.bg-yellow .progress-track,
+.bg-white  .progress-track,
+.bg-cream  .progress-track { background: rgba(0, 0, 0, .14); }
+.bg-yellow .progress-fill,
+.bg-white  .progress-fill,
+.bg-cream  .progress-fill { background: var(--red); }
+.bg-yellow .progress-n,
+.bg-white  .progress-n,
+.bg-cream  .progress-n { color: rgba(0, 0, 0, .4); }
+
+/* ============ FUNDOS ============ */
+.bg-red      { background: var(--red); }
+.bg-red-g    { background: linear-gradient(150deg, var(--red) 0%, var(--red-3) 100%); }
+.bg-red-d    { background: linear-gradient(150deg, var(--red-2) 0%, var(--red-4) 100%); }
+.bg-yellow   { background: var(--yellow); }
+.bg-dark     { background: var(--ink); }
+.bg-dark2    { background: var(--ink-2); }
+.bg-white    { background: var(--paper); }
+.bg-cream    { background: var(--cream); }
+.bg-cover    { background: linear-gradient(145deg, var(--red) 0%, var(--red-2) 45%, #1e0000 100%); }
+
+/* Cor de texto base por tipo de fundo (herança, sem seletor universal) */
+.bg-red, .bg-red-g, .bg-red-d,
+.bg-dark, .bg-dark2, .bg-cover { color: #fff; }
+.bg-yellow, .bg-white, .bg-cream { color: var(--ink); }
+
+/* ============ DECORAÇÃO (círculos) ============ */
+.deco {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+}
+.bg-red .deco, .bg-red-g .deco,
+.bg-red-d .deco, .bg-cover .deco { background: rgba(0, 0, 0, .13); }
+.bg-dark .deco, .bg-dark2 .deco  { background: rgba(255, 255, 255, .04); }
+.bg-white .deco, .bg-cream .deco { background: rgba(188, 4, 4, .06); }
+
+/* Posições/tamanhos reutilizáveis */
+.deco--tr-xl { width: 340px; height: 340px; top: -110px; right: -90px; }
+.deco--tr-lg { width: 300px; height: 300px; top: -100px; right: -80px; }
+.deco--tr-md { width: 280px; height: 280px; top: -90px;  right: -70px; }
+.deco--tr-sm { width: 260px; height: 260px; top: -85px;  right: -65px; }
+.deco--bl-lg { width: 200px; height: 200px; bottom: -70px; left: -50px; }
+.deco--bl-md { width: 180px; height: 180px; bottom: -60px; left: -50px; }
+.deco--accent      { background: rgba(244, 197, 0, .12) !important; }
+.deco--dot-accent  { width: 90px; height: 90px; bottom: 100px; right: 20px;
+                     background: rgba(244, 197, 0, .15) !important; }
+
+/* ============ TIPOGRAFIA ============ */
+.eyebrow {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  padding: 5px 13px;
+  border-radius: 99px;
+  margin-bottom: 14px;
+}
+.eyebrow--ghost { background: rgba(255, 255, 255, .18); color: #fff; }
+.eyebrow--red   { background: var(--red);   color: #fff; }
+.eyebrow--yellow{ background: var(--yellow); color: var(--ink); }
+.eyebrow--dark  { background: rgba(0, 0, 0, .14); color: var(--ink); }
+
+.title {
+  font-size: clamp(30px, 9vw, 44px);
+  font-weight: 900;
+  line-height: 1.05;
+  margin-bottom: 12px;
+}
+.title--close { font-size: clamp(22px, 6.5vw, 30px); }
+
+.emoji-hero {
+  font-size: clamp(64px, 18vw, 88px);
+  font-weight: 900;
+  line-height: .9;
+  color: var(--yellow);
+  margin-bottom: 4px;
+}
+
+.lead {
+  font-size: clamp(13px, 3.8vw, 16px);
+  font-weight: 600;
+  line-height: 1.55;
+  margin-bottom: 8px;
+}
+
+/* Realces */
+.hl-yellow { color: var(--yellow); }
+.hl-red    { color: var(--red); }
+.dim       { opacity: .82; }
+.dimmer    { opacity: .6; }
+
+.lead.on-dark  { color: rgba(255, 255, 255, .65); }
+.lead.on-light { color: #555; }
+
+/* Marca */
+.brand { margin-bottom: 20px; }
+
+/* ============ PÍLULAS (capa) ============ */
+.pills { margin-top: 28px; display: flex; gap: 8px; flex-wrap: wrap; }
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 13px;
+  border-radius: 99px;
+  font-size: 11px;
+  font-weight: 800;
+}
+.pill--accent { background: rgba(244, 197, 0, .18); color: var(--yellow); }
+.pill--ghost  { background: rgba(255, 255, 255, .10); color: rgba(255, 255, 255, .6); }
+
+/* ============ LISTA DE TAREFAS (slide 2) ============ */
+.tasklist { margin-top: 16px; display: flex; flex-direction: column; gap: 8px; }
+.task {
+  background: #fff;
+  border-radius: 0 12px 12px 0;
+  padding: 10px 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, .07);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--ink);
+  text-decoration: none;
+}
+.task--red    { border-left: 4px solid var(--red); }
+.task--yellow { border-left: 4px solid var(--yellow); }
+.task-icon { font-size: 20px; }
+.task-label { font-size: 12px; font-weight: 800; }
+
+/* ============ ETAPAS NUMERADAS ============ */
+.steps { display: flex; flex-direction: column; margin-top: 10px; }
+.step { display: flex; align-items: flex-start; gap: 11px; margin-bottom: 11px; }
+.step-badge {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 900;
+  flex-shrink: 0;
+  margin-top: 1px;
+  background: rgba(244, 197, 0, .2);
+  color: var(--yellow);
+  outline: 2px solid var(--yellow);
+}
+.step-badge--solid { background: var(--yellow); color: var(--ink); outline: none; }
+.step-title { font-size: 12px; font-weight: 800; margin-bottom: 1px; }
+.step-desc  { font-size: 11px; font-weight: 500; line-height: 1.45; color: rgba(255, 255, 255, .6); }
+
+/* ============ PILARES (marcações de ponto) ============ */
+.pillars { display: flex; gap: 8px; margin-top: 18px; }
+.pillar {
+  flex: 1;
+  border-radius: 16px;
+  padding: 14px 8px;
+  text-align: center;
+}
+.pillar--red     { background: rgba(188, 4, 4, .10); border: 2px solid rgba(188, 4, 4, .18); }
+.pillar--neutral { background: rgba(0, 0, 0, .07);   border: 2px solid rgba(0, 0, 0, .10); }
+.pillar-icon  { font-size: 26px; display: block; margin-bottom: 7px; }
+.pillar-label { font-size: 11px; font-weight: 900; display: block; }
+.pillar-sub   { font-size: 9px; font-weight: 600; display: block; margin-top: 3px; color: #555; }
+.pillar-label.on-red { color: var(--red); }
+
+/* ============ FERRAMENTAS / CREDENCIAIS ============ */
+.tools { margin-top: 14px; }
+.tool {
+  display: flex;
+  align-items: flex-start;
+  gap: 11px;
+  border-radius: 12px;
+  padding: 10px 12px;
+  margin-bottom: 8px;
+}
+.bg-white .tool, .bg-cream .tool { background: rgba(0, 0, 0, .05); }
+.bg-dark  .tool, .bg-dark2 .tool { background: rgba(255, 255, 255, .07); }
+.tool-icon  { font-size: 22px; flex-shrink: 0; }
+.tool-name  { font-size: 12px; font-weight: 800; }
+.tool-desc  { font-size: 11px; font-weight: 500; opacity: .8; margin-top: 2px; line-height: 1.4; }
+.tool-desc em { font-style: italic; }
+.tool-desc a { color: inherit; text-decoration: underline; }
+
+/* Cartão de credenciais (slide 7) */
+.infocard {
+  background: rgba(255, 255, 255, .10);
+  border-radius: 13px;
+  padding: 14px 16px;
+  margin-bottom: 10px;
+}
+.infocard-head {
+  font-size: 11px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, .6);
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+.cred { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+.cred:last-child { margin-bottom: 0; }
+.cred-icon { font-size: 18px; }
+.cred-label { font-size: 10px; color: rgba(255, 255, 255, .5); font-weight: 600; }
+.cred-value { font-size: 13px; font-weight: 800; color: var(--yellow); }
+
+/* ============ CHECKLIST ============ */
+.checklist { margin-top: 12px; }
+.check {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  border-radius: 11px;
+  padding: 10px 12px;
+  margin-bottom: 7px;
+  background: rgba(255, 255, 255, .12);
+}
+.check--highlight {
+  background: rgba(244, 197, 0, .20);
+  border: 1px solid rgba(244, 197, 0, .30);
+}
+.check-icon { font-size: 15px; flex-shrink: 0; margin-top: 1px; }
+.check-text { font-size: 12px; font-weight: 700; line-height: 1.4; }
+.check-text.on-accent { color: var(--yellow); }
+
+/* ============ CAIXAS DE DESTAQUE / CALLOUTS ============ */
+.callout {
+  border-radius: 12px;
+  padding: 12px 14px;
+  margin-top: 12px;
+}
+.callout-title { font-size: 12px; font-weight: 800; margin-bottom: 4px; }
+.callout-body  { font-size: 11px; line-height: 1.5; }
+
+.callout--danger { background: rgba(188, 4, 4, .30); border-left: 3px solid var(--red); }
+.callout--danger .callout-title { color: var(--yellow); }
+.callout--danger .callout-body  { color: rgba(255, 255, 255, .8); }
+
+.callout--warn { background: rgba(244, 197, 0, .15); border-left: 3px solid var(--yellow); }
+.callout--warn .callout-title { color: var(--yellow); }
+.callout--warn .callout-body  { color: rgba(255, 255, 255, .8); }
+
+.callout--info-dark { background: rgba(244, 197, 0, .12); border-left: 3px solid var(--yellow); }
+.callout--info-dark .callout-body { color: rgba(255, 255, 255, .8); }
+
+.callout--info-light {
+  background: var(--cream);
+  border: 1.5px solid rgba(188, 4, 4, .15);
+}
+.callout--info-light .callout-title { color: var(--red); }
+.callout--info-light .callout-body  { color: #444; }
+
+.callout--note-dark {
+  background: rgba(0, 0, 0, .09);
+  text-align: center;
+}
+.callout--note-dark .callout-body { color: #333; font-weight: 800; }
+
+.callout--row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(188, 4, 4, .12);
+}
+.callout--row .callout-icon { font-size: 22px; }
+.callout--row .callout-title { color: var(--red); font-weight: 900; margin: 0; }
+.callout--row .callout-body  { color: #444; margin-top: 2px; }
+
+/* Cartão do vídeo (slide 8) */
+.videocard {
+  margin-top: 10px;
+  background: #fff;
+  border-radius: 13px;
+  padding: 13px 15px;
+  border: 1.5px solid rgba(188, 4, 4, .12);
+  text-align: center;
+}
+.videocard-emoji { font-size: 20px; margin-bottom: 4px; }
+.videocard-title { font-size: 12px; font-weight: 800; color: var(--red); }
+.videocard-body  { font-size: 11px; color: #555; margin-top: 3px; line-height: 1.5; }
+
+/* ============ SELOS DE ENCERRAMENTO ============ */
+.badges { display: flex; flex-direction: column; gap: 8px; margin-top: 16px; width: 100%; }
+.badge {
+  background: rgba(255, 255, 255, .10);
+  border-radius: 12px;
+  padding: 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.badge--accent { background: rgba(244, 197, 0, .18); border: 1.5px solid rgba(244, 197, 0, .30); }
+.badge-icon { font-size: 18px; }
+.badge-text { font-size: 13px; font-weight: 700; }
+.badge-text.on-accent { color: var(--yellow); }
+
+.signature {
+  margin-top: 20px;
+  font-size: 10px;
+  color: rgba(255, 255, 255, .4);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+
+/* ============ DIVISORES ============ */
+.divider { height: 1px; background: rgba(255, 255, 255, .12); margin: 4px 0 10px; }
+
+/* Utilitário de espaçamento pontual */
+.mt-sm { margin-top: 6px; }
+
+/* ============ ANIMAÇÕES ============ */
+@keyframes fadeUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+@keyframes slideR { from { opacity: 0; transform: translateX(-14px); } to { opacity: 1; transform: none; } }
+
+.slide:target .a1, #s0 .a1 { animation: fadeUp .5s .08s both; }
+.slide:target .a2, #s0 .a2 { animation: fadeUp .5s .18s both; }
+.slide:target .a3, #s0 .a3 { animation: fadeUp .5s .28s both; }
+.slide:target .a4, #s0 .a4 { animation: fadeUp .5s .38s both; }
+.slide:target .a5, #s0 .a5 { animation: fadeUp .5s .48s both; }
+.slide:target .a6, #s0 .a6 { animation: fadeUp .5s .58s both; }
+.slide:target .r1, #s0 .r1 { animation: slideR .42s .10s both; }
+.slide:target .r2, #s0 .r2 { animation: slideR .42s .20s both; }
+.slide:target .r3, #s0 .r3 { animation: slideR .42s .30s both; }
+
+/* ============ FOCO VISÍVEL E MOVIMENTO REDUZIDO ============ */
+a:focus-visible {
+  outline: 3px solid currentColor;
+  outline-offset: -5px;
+  border-radius: 8px;
+}
+.tap:focus-visible .chevron { opacity: 1; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .001ms !important;
+  }
+}
