@@ -49,6 +49,15 @@ img { max-width: 100%; height: auto; }
   background: var(--shell);
 }
 
+.brand {
+  /* text-align: center; */
+}
+
+.brand img {
+  width: 160px;
+  height: auto;
+}
+
 #frame {
   position: relative;
   width: 100%;
@@ -294,7 +303,7 @@ img { max-width: 100%; height: auto; }
 .pill--ghost  { background: rgba(255, 255, 255, .10); color: rgba(255, 255, 255, .6); }
 
 /* ============ LISTA DE TAREFAS (slide 2) ============ */
-.tasklist { margin-top: 16px; display: flex; flex-direction: column; gap: 8px; }
+.tasklist { margin-top: 16px; display: flex; flex-direction: column; gap: 8px; list-style: none; }
 .task {
   background: #fff;
   border-radius: 0 12px 12px 0;
@@ -310,6 +319,25 @@ img { max-width: 100%; height: auto; }
 .task--yellow { border-left: 4px solid var(--yellow); }
 .task-icon { font-size: 20px; }
 .task-label { font-size: 12px; font-weight: 800; }
+
+/* Numeração e sublinha das marcações de ponto (reaproveita o cartão .task) */
+.task-num {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 900;
+  flex-shrink: 0;
+  color: #fff;
+}
+.task--red    .task-num { background: var(--red); }
+.task--yellow .task-num { background: var(--yellow); color: var(--ink); }
+.task-main { display: flex; flex-direction: column; }
+.task-sub  { font-size: 10px; font-weight: 700; color: #8a8a8a; margin-top: 1px; }
+.task-sub--alert { color: var(--red); }
 
 /* ============ ETAPAS NUMERADAS ============ */
 .steps { display: flex; flex-direction: column; margin-top: 10px; }
